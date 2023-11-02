@@ -13,24 +13,24 @@ from pathlib import Path
 
 # path = 'thesispdfs'
 # os.mkdir(path)
- 
+
 # URL from which pdfs to be downloaded
 url = "https://ocgov.net/departments/emergency-services/911-summary-report//"
 my_dir = Path.cwd()
 print(my_dir)
 #text_file = open("C:/Users/sydneytran/thesis/downloadedpdfs.txt","r+") # open text file to keep track of downloaded pdfs
-text_file = open(str(my_dir) + "/downloadedpdfs.txt","r+") # open text file to keep track of downloaded pdfs
+text_file = open(str(my_dir) + "\downloadedpdfs.txt","r+") # open text file to keep track of downloaded pdfs
 #text_file_contents = text_file.read()
- 
+
 # Requests URL and get response object
 response = requests.get(url)
- 
+
 # Parse text obtained
 soup = BeautifulSoup(response.text, 'html.parser')
- 
+
 # Find all hyperlinks present on webpage
 links = soup.find_all('a')
- 
+
 i = 0
 
 # source: https://stackoverflow.com/questions/12093940/reading-files-in-a-particular-order-in-python
@@ -40,7 +40,7 @@ def numericalSort(value):
     parts = numbers.split(value)
     parts[1::2] = map(int, parts[1::2])
     return parts
- 
+
 # From all links check for pdf link and
 # if present download file
 
@@ -49,19 +49,19 @@ new_downloads = []
 for link in links:
     if (('.pdf' in link.get('href'))):
         #print("link is: " + link.get('href'))
-        
+
         i += 1
         #print("Downloading file: ", i)
- 
+
         # Get response object for link
         #print('https://ocgov.net' + (link.get('href')))
         try:
             response = requests.get('https://ocgov.net' + (link.get('href')))
         except requests.exceptions.ConnectionError:
             requests.status_code = "Connection refused"
-        
-        
- 
+
+
+
         # Write content in pdf file
         if (i > 1):
             print(i)
@@ -84,7 +84,7 @@ for link in links:
 
 print("new downloads: ")
 print(new_downloads)
- 
+
 print("All PDF files downloaded")
 directory = str(my_dir) + "/thesispdfs"
 all_files = []
@@ -109,12 +109,14 @@ for file in new_downloads:
 
     dframe = pd.read_excel(file[5] + ".xlsx")  # create empty pandas dataframe
     first_data = tabula.read_pdf(str(my_dir) + "/thesispdfs/" + file[5], pages="1")  # read first page of pdf
+    print(first_data)
     dframe = pd.concat(
         [dframe, first_data[0]], ignore_index=False
     )  # concatenate first page dataframe with empty pandas dataframe
 
     dfdata = tabula.read_pdf(
-        "/Users/sydneytran/thesis/thesispdfs/" + file[5], pages="all"
+        #"/Users/sydneytran/thesis/thesispdfs/" + file[5], pages="all"
+        str(my_dir) + "/thesispdfs/" + file[5], pages = "all"
     )  # read all pdf pages and turn into list of pandas dataframes
 
     # source: https://www.geeksforgeeks.org/python-create-list-of-numbers-with-given-range/
