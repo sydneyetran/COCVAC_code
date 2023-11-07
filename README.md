@@ -19,4 +19,4 @@ Once we have the PDFs, we need to convert the PDF data into a tabular form so th
 
 ### Folder Storage
 
-Once the Excel Workbook with a day's 911 call data is created, it is added to a folder for 911 call data. This folder is stores Excel Worksheets. A new workbook is stored for each day of 911 call data.
+Once the Excel Workbook with a day's 911 call data is created, it is added to a folder for 911 call data. This folder is stores Excel Worksheets. A new workbook is stored for each day of 911 call data. This folder will then be used for other parts of our project and the folder's contents will be loaded into Power BI. 
