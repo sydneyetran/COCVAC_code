@@ -16,7 +16,7 @@ from pathlib import Path
 
 # URL from which pdfs to be downloaded
 url = "https://ocgov.net/departments/emergency-services/911-summary-report//"
-my_dir = "C:/Users/mmonroe/Desktop/COCVAC_code"
+my_dir = "C:/Users/mmonroe/Desktop/COCVAC_code/"
 print(my_dir)
 #text_file = open("C:/Users/sydneytran/thesis/downloadedpdfs.txt","r+") # open text file to keep track of downloaded pdfs
 text_file = open(str(my_dir) + "/downloadedpdfs.txt","r+") # open text file to keep track of downloaded pdfs
@@ -103,11 +103,13 @@ for file in new_downloads:
     file = file.split('/')
     print("file name minus excel")
     print(file[5])
-    wb.save(filename=file[5] + ".xlsx")  # create empty excel file with openpyxl object
+    file_path = "C:/Users/mmonroe/Desktop/COCVAC_code/thesispdfs/thesisexcels/"
+    file_name = file[5] + ".xlsx"
+    wb.save(os.path.join(file_path, file_name))  # create empty excel file with openpyxl object
 
     #n = len(sys.argv)  # take argument in command line
 
-    dframe = pd.read_excel(file[5] + ".xlsx")  # create empty pandas dataframe
+    dframe = pd.read_excel(os.path.join(file_path, file_name))  # create empty pandas dataframe
     first_data = tabula.read_pdf(str(my_dir) + "/thesispdfs/" + file[5], pages="1")  # read first page of pdf
     dframe = pd.concat(
         [dframe, first_data[0]], ignore_index=False
@@ -123,9 +125,9 @@ for file in new_downloads:
 
 
     v1, v2 = 1, len(dfdata)
-
+    template_path = os.path.join(my_dir, "mytemplate.json")
     dfdata = tabula.read_pdf_with_template(
-        input_path=str(my_dir) + "/thesispdfs/" + file[5], template_path="mytemplate.json", pages=createrange(v1, v2)
+        input_path=str(my_dir) + "/thesispdfs/" + file[5], template_path=template_path, pages=createrange(v1, v2)
     )
     # read pdf and convert pdf data into list of pandas dataframes for each page
 
@@ -143,7 +145,7 @@ for file in new_downloads:
 
 
     newdf.to_excel(
-        file[5] + ".xlsx", sheet_name="alltables", index=False
+        os.path.join(file_path, file_name), sheet_name="alltables", index=False
     )  # convert dataframe into excel file
-    shutil.move(file[5] + ".xlsx", str(my_dir) + "/thesispdfs/thesisexcels")  # move excel file into thesisexcels folder
+    # shutil.move(os.path.join(file_path, file_name), str(my_dir) + "/thesispdfs/thesisexcels")  # move excel file into thesisexcels folder
     k += 1
