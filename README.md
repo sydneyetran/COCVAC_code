@@ -7,7 +7,7 @@ This code is only a small part of our entire project. To learn more, visit our [
 
 ### Daily Python Script
 
-Our plan is to turn our current Python code into an executable and run it everyday to complete the following two tasks: 
+We created a Python file titled "testdownloading.py" that scrapes 911 Call Data From PDFs and converts the PDFs into Excels. This was then turned into an executable titled "testdownloadingbatch.bat" that could be executed daily. By using the Windows Task Scheduler, we were able to choose a specific time each day to automatically run our code. This accomplished the following:
 
 #### Scraping 911 Call Data PDFs
 
