@@ -6,24 +6,18 @@ import os
 import tabula
 import pandas as pd
 import openpyxl
+import datetime
 import sys
 import re
 import shutil
 from pathlib import Path
 
-# path = 'thesispdfs'
-# os.mkdir(path)
-
 # URL from which pdfs to be downloaded
 url = "https://ocgov.net/departments/emergency-services/911-summary-report//"
 my_dir = "C:/Users/cameras/COCVAC_code"
 print(my_dir)
-#text_file = open("C:/Users/sydneytran/thesis/downloadedpdfs.txt","r+") # open text file to keep track of downloaded pdfs
 text_file = open("C:/Users/cameras/COCVAC_code/downloadedpdfs.txt","r+") # open text file to keep track of downloaded pdfs
-text_file.write("hello")
-print("here")
 print(text_file)
-#text_file_contents = text_file.read()
 
 # Requests URL and get response object
 response = requests.get(url)
@@ -35,7 +29,6 @@ soup = BeautifulSoup(response.text, 'html.parser')
 links = soup.find_all('a')
 
 i = 0
-
 # source: https://stackoverflow.com/questions/12093940/reading-files-in-a-particular-order-in-python
 
 numbers = re.compile(r'(\d+)')
@@ -51,44 +44,29 @@ new_downloads = []
 
 for link in links:
     if (('.pdf' in link.get('href'))):
-        #print("link is: " + link.get('href'))
 
         i += 1
-        #print("Downloading file: ", i)
 
         # Get response object for link
-        #print('https://ocgov.net' + (link.get('href')))
         try:
             response = requests.get('https://ocgov.net' + (link.get('href')))
         except requests.exceptions.ConnectionError:
             requests.status_code = "Connection refused"
 
-
-        print("I AM HERE")
-        print(i)
         # Write content in pdf file
         if (i > 1):
-            print(i)
             with open(str(my_dir) + "/downloadedpdfs.txt") as f:
                 contents = f.readlines()
-            #print(contents)
             current_file = contents
             print(current_file)
             print("\n" + link.get('href'))
             if (link.get('href') + "\n" not in current_file):
-                print("PLS ADD")
-                # text_file.write(link.get('href') + "\n")
                 with open("C:/Users/cameras/COCVAC_code/downloadedpdfs.txt","a+") as file:
                     file.write(link.get('href') + "\n")
-                print("this is suppposed to go in here:", link.get('href'))
                 new_downloads.append(link.get('href'))
-                #print("the href wasn't in text file")
-                #pdf = open("/Users/sydneytran/thesis/thesispdfs/" + "pdf" + str(i) + ".pdf", 'wb')
-                #pdf = open("/Users/sydneytran/thesis/thesispdfs/" + link.get('href').split('/')[-1], 'wb')
                 pdf = open(str(my_dir) + "/thesispdfs/" + link.get('href').split('/')[-1], 'wb')
                 pdf.write(response.content)
                 pdf.close()
-                #print("File ", i, " downloaded")
 
 print("new downloads: ")
 print(new_downloads)
@@ -100,7 +78,6 @@ all_files = []
 re_pattern = re.compile('.+?(\d+)\.([a-zA-Z0-9+])')
 files_ordered = sorted(all_files, key = numericalSort)
 files_ordered = sorted(all_files, key=lambda x: int(re_pattern.match(x).groups()[0]))
-print(files_ordered)
 
 k = 1
 for file in new_downloads:
@@ -109,24 +86,17 @@ for file in new_downloads:
     print("file: ")
     print(file)
     file = file.split('/')
-    print("file name minus excel")
-    print(file[5])
+
     file_path = "C:/Users/cameras/COCVAC_code/thesispdfs/thesisexcels/"
     file_name = file[5] + ".xlsx"
     wb.save(os.path.join(file_path, file_name))  # create empty excel file with openpyxl object
-    print("this is after the save")
-
-    #n = len(sys.argv)  # take argument in command line
 
     dframe = pd.read_excel(os.path.join(file_path, file_name))  # create empty pandas dataframe
-    print("created empty frame")
     first_data = tabula.read_pdf(str(my_dir) + "/thesispdfs/" + file[5], pages="1")  # read first page of pdf
-    print("got first page")
     dframe = pd.concat(
         [dframe, first_data[0]], ignore_index=False
     )  # concatenate first page dataframe with empty pandas dataframe
-    print("this is after concat")
-    #print(dframe)
+
     
     dfdata = tabula.read_pdf(
         my_dir + "/thesispdfs/" + file[5], pages="all"
@@ -138,8 +108,6 @@ for file in new_downloads:
 
 
     v1, v2 = 1, len(dfdata)
-    print("THIS IS THE RANGE")
-    print(createrange(v1, v2))
     template_path = os.path.join(my_dir, "mytemplate.json")
     dfdata = tabula.read_pdf_with_template(
         input_path=str(my_dir) + "/thesispdfs/" + file[5], template_path=template_path, pages=createrange(v1, v2)
@@ -162,6 +130,7 @@ for file in new_downloads:
     newdf.to_excel(
         os.path.join(file_path, file_name), sheet_name="alltables", index=False
     )  # convert dataframe into excel file
-    # shutil.move(os.path.join(file_path, file_name), str(my_dir) + "/thesispdfs/thesisexcels")  # move excel file into thesisexcels folder
     k += 1
 text_file.close()
+log = open(str(my_dir) + "/running_log.txt","a+") # open text file to keep track of downloaded pdfs
+log.write("\n" + str(datetime.datetime.now()))
