@@ -1,4 +1,4 @@
 @echo off
 python -V
-"C:\Users\mmonroe\.conda\envs\cocvac\python.exe" "C:\Users\mmonroe\Desktop\COCVAC_code\testdownloading.py"
-pause
+"C:\Users\cameras\AppData\Local\Programs\Python\Python310\python.exe" "C:\Users\cameras\COCVAC_code\testdownloading.py"
+exit
